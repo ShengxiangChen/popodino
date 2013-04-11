@@ -98,7 +98,7 @@ PP.GameScene = cc.Scene.extend({
             if(b){
                 //this.record(b, pos.x, pos.y);
                 this.addChild(b);
-                console.log(pos);
+                b.setVisible(true);
                 b.setPosition(pos);
                 //b.className = this.colors[Math.floor(Math.random() * len)];
             }
