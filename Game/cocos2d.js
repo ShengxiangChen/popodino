@@ -40,6 +40,7 @@
             'src/Config/Constant.js',
             'src/resource.js',
             'src/Unit/Bubble.js',
+            'src/Layer/GameLayer.js',
             'src/Scene/GameScene.js'
         ]
     };
