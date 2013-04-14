@@ -13,9 +13,9 @@ PP.GameLayer = cc.Layer.extend({
 
         this.noj = [];
         this.speed = 1116;
-        this.diameter = 39;
-        this.px = 5;
-        this.py = 480 - 19;
+        this.diameter = 34;
+        this.px = 24;
+        this.py = 480 - 46;
         this.poc2 = 3;
         this.deathy = 400;
         this.allst = 30;

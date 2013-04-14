@@ -42,6 +42,7 @@
             'src/resource.js',
             'src/Unit/Bubble.js',
             'src/Layer/GameLayer.js',
+            'src/Layer/BackgroundLayer.js',
             'src/Scene/GameScene.js'
         ]
     };

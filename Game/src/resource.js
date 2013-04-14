@@ -1,22 +1,11 @@
-var Ball = {
-    Blue:"res/blue.png",
-    Cyan:"res/cyan.png",
-    Green:"res/green.png",
-    Pink:"res/pink.png",
-    Purple:"res/purple.png",
-    Red:"res/red.png",
-    Yellow:"res/yellow.png"
-};
-
+var Bubble_plist = "res/bubbles.plist";
+var Bubble_png = "res/bubbles.png";
 var Weapon = "res/a2.png";
+var GameBackground = "res/bg.jpg";
 
 var g_ressources = [
-    {src:Ball.Blue},
-    {src:Ball.Cyan},
-    {src:Ball.Green},
-    {src:Ball.Pink},
-    {src:Ball.Purple},
-    {src:Ball.Red},
-    {src:Ball.Yellow},
-    {src:Weapon}
+    {src:Bubble_plist},
+    {src:Bubble_png},
+    {src:Weapon},
+    {src:GameBackground},
 ];

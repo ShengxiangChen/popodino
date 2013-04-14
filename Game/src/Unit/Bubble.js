@@ -6,28 +6,28 @@ PP.Bubble = cc.Sprite.extend({
         var filename;
         switch (type){
             case PP.BubbleType.Bule:
-                filename = Ball.Blue;
+                filename = "blue.png";
                 break;
-            case PP.BubbleType.Cyan:
-                filename = Ball.Cyan;
+            case PP.BubbleType.White:
+                filename = "white.png";
                 break;
             case PP.BubbleType.Green:
-                filename = Ball.Green;
+                filename = "green.png";
                 break;
-            case PP.BubbleType.Pink:
-                filename = Ball.Pink;
+            case PP.BubbleType.Orange:
+                filename = "orange.png";
                 break;
             case PP.BubbleType.Purple:
-                filename = Ball.Purple;
-                break;
-            case PP.BubbleType.Red:
-                filename = Ball.Red;
+                filename = "purple.png";
                 break;
             case PP.BubbleType.Yellow:
-                filename = Ball.Yellow;
+                filename = "yellow.png";
+                break;
+            case PP.BubbleType.Bomb:
+                filename = "bomb.png";
                 break;
         }
-        this.initWithFile(filename);
+        this.initWithSpriteFrameName(filename);
     }
 });
 
