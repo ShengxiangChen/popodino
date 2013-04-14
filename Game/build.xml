@@ -1,13 +1,12 @@
 <?xml version="1.0"?>
 <project name="Javascript compress project" basedir="." default="compile">
-
     <taskdef name="jscomp" classname="com.google.javascript.jscomp.ant.CompileTask"
-             classpath="${basedir}/../tools/compiler/compiler.jar"/>
-
+             classpath="${basedir}/../HTML5/tools/compiler/compiler.jar"/>
     <target name="compile">
+        <!--advanced / simple-->
         <jscomp compilationLevel="simple" warning="quiet"
-                debug="false" output="myTemplate.js">
-            <sources dir="${basedir}/../cocos2d">
+                debug="false" output="popodino.js">
+            <sources dir="${basedir}/../HTML5/cocos2d">
                 <file name="platform/CCClass.js"/>
                 <file name="platform/CCCommon.js"/>
                 <file name="platform/miniFramework.js"/>
@@ -116,13 +115,13 @@
                 <file name="tileMap_parallax_nodes/CCTMXObjectGroup.js"/>
                 <file name="tileMap_parallax_nodes/CCTMXLayer.js"/>
                 <file name="tileMap_parallax_nodes/CCParallaxNode.js"/>
-                <file name="platform/jsloader.js"/>
+                <!--<file name="platform/jsloader.js"/>-->
             </sources>
-            <sources dir="${basedir}/../CocosDenshion">
+            <sources dir="${basedir}/../HTML5/CocosDenshion">
                 <file name="SimpleAudioEngine.js"/>
             </sources>
             <!-- extensions -->
-            <sources dir="${basedir}/../extensions">
+            <sources dir="${basedir}/../HTML5/extensions">
                 <file name="CCBReader/CCBReaderUtil.js"/>
                 <file name="CCBReader/CCBValue.js"/>
                 <file name="CCBReader/CCBKeyframe.js"/>
@@ -151,8 +150,11 @@
                 <file name="CCEditBox.js"/>
             </sources>
             <sources dir="${basedir}">
+                <file name="src/Config/Constant.js"/>
                 <file name="src/resource.js"/>
-                <file name="src/myApp.js"/>
+                <file name="src/Unit/Bubble.js"/>
+                <file name="src/Layer/GameLayer.js"/>
+                <file name="src/Scene/GameScene.js"/>
                 <file name="main.js"/>
             </sources>
         </jscomp>

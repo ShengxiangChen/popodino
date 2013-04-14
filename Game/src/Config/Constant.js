@@ -1,13 +1,13 @@
 var PP = PP = {};
 
 PP.BubbleType = {
-    Bule:0,
-    Cyan:1,
-    Green:2,
-    Pink:3,
-    Purple:4,
-    Red:5,
-    Yellow:6
+    Bule:1,
+    Cyan:2,
+    Green:3,
+    Pink:4,
+    Purple:5,
+    Red:6,
+    Yellow:7
 };
 
 PP.sco = 0;
