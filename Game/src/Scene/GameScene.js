@@ -1,6 +1,7 @@
 PP.GameScene = cc.Scene.extend({
     gameLayer:null,
     bgLayer:null,
+    uiLayer:null,
     init:function () {
         this._super();
         cc.SpriteFrameCache.getInstance().addSpriteFrames(Bubble_plist);
@@ -10,10 +11,17 @@ PP.GameScene = cc.Scene.extend({
 
         this.bgLayer = PP.BackgroundLayer.create();
         this.addChild(this.bgLayer, 0);
-        //this.setting(this.stg);
-        //this.newBubble();
+
+        this.uiLayer = PP.UILayer.create();
+        this.addChild(this.uiLayer, 11);
 
         this.schedule(this.update);
+    },
+    getGameLayer:function(){
+        return this.gameLayer;
+    },
+    getUILayer:function(){
+        return this.uiLayer;
     },
     update:function(dt){
         this.gameLayer.update(dt);

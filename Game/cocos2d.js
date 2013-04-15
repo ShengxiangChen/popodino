@@ -43,6 +43,7 @@
             'src/Unit/Bubble.js',
             'src/Layer/GameLayer.js',
             'src/Layer/BackgroundLayer.js',
+            'src/Layer/UILayer.js',
             'src/Scene/GameScene.js'
         ]
     };

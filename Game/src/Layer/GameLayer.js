@@ -6,16 +6,34 @@ PP.GameLayer = cc.Layer.extend({
     tmpBubble: cc.p(0, 0),
     _rotation: 0,
     player: null,
+    container:null,
     init: function () {
         this._super();
         window.layer = this;
+        var t = sys.platform;
+        var os = sys.os;
         this.setTouchEnabled(true);
+        /*if(t = 'browser'){
+            this.setMouseEnabled(true);
+        }
+        else{
+            this.setTouchEnabled(true);
+        }*/
+
+
+        if(cc.renderMode = cc.WEBGL){
+            this.container = cc.SpriteBatchNode.create(Bubble_png);
+            this.addChild(this.container,100);
+        }
+        else{
+            this.container = this;
+        }
 
         this.noj = [];
         this.speed = 1116;
         this.diameter = 34;
         this.px = 24;
-        this.py = 480 - 46;
+        this.py = 480 - 52;
         this.poc2 = 3;
         this.deathy = 400;
         this.allst = 30;
@@ -57,9 +75,15 @@ PP.GameLayer = cc.Layer.extend({
         this.isStoped = this.u = this.vib = this.vk = 0;
         this.ga = 3;
 
-        this.player = cc.Sprite.create("res/a2.png");
-        this.player.setPosition(cc.p(160, 16));
-        this.addChild(this.player);
+        this.player = cc.Sprite.create(Turret);
+        this.player.setAnchorPoint(cc.p(0.5,0.31))
+        this.player.setPosition(cc.p(160, 36));
+        this.addChild(this.player,11);
+
+        var pad = cc.Sprite.create(Pad);
+        pad.setPosition(cc.p(160,10));
+        this.addChild(pad,10);
+
         this.setting(this.stg);
         this.newBubble();
     },
@@ -78,7 +102,7 @@ PP.GameLayer = cc.Layer.extend({
             if (level[i] > 0) {
                 var bubble = PP.Bubble.create(level[i]);
                 bubble.setPosition(cc.p(sx, sy));
-                this.addChild(bubble, this.depth, lines * 10 + ars);
+                this.container.addChild(bubble, this.depth, lines * 10 + ars);
                 bubble.colorType = level[i];
                 this.allBubbles.push(bubble);
                 ++this.depth;
@@ -201,7 +225,7 @@ PP.GameLayer = cc.Layer.extend({
                     var nump = np + this.arp[j];
                     var numn = nn + this["arn" + ch][j];
                     var n = nump * 10 +numn;
-                    var child = this.getChildByTag(n);
+                    var child = this.container.getChildByTag(n);
                     if (child && child.colorType < 10) {
                         this.res.push(n);
                     }
@@ -260,7 +284,7 @@ PP.GameLayer = cc.Layer.extend({
                     var nump = np + this.arp[j];
                     var numn = nn + this["arn" + ch][j];
                     var n = nump * 10 + numn;
-                    var child = this.getChildByTag(n);
+                    var child = this.container.getChildByTag(n);
                     if (child && child.colorType == key) {
                         this.res.push(n);
                     }
@@ -338,6 +362,8 @@ PP.GameLayer = cc.Layer.extend({
         }
         var spe = kk * 20;
         //score
+        this.game.getUILayer().addScore(spe);
+        console.log(1)
         /* _parent.sco = _parent.sco + spe;
          _parent.numv(_parent.sco, "scom", 6);
          _parent.spe.sco = spe;
@@ -359,28 +385,40 @@ PP.GameLayer = cc.Layer.extend({
     onTouchesBegan: function (touches) {
         this._super();
         this.mouse = touches[0].getLocation();
-        if (/*this.shts == 1 && */(this.mouse.x > 15 && this.mouse.x < 315)) {
-            var xdis = this.mouse.x - this.player.getPosition().x;
-            var ydis = this.mouse.y - this.player.getPosition().y;
-            var gagy = -(Math.atan2(ydis, xdis) / this.radian - 90);
-            if (gagy < 80 && gagy > -80) {
-                if (gagy != this.player.getRotation()) {
-                    this.player.setRotation(gagy);
-                }
-            }
-            this.gos();
-        }
     },
     onTouchesMoved: function (touches) {
         this._super();
+        this.mouse = touches[0].getLocation();
     },
     onTouchesEnded: function (touches) {
         this._super();
+        this.shoot();
+    },
+    onMouseDown:function(event) {
+        this._super();
+        this.mouse = event.getLocation();
+    },
+    onMouseMoved:function(event){
+        this._super();
+        this.mouse = event.getLocation();
+    },
+    onMouseDragged:function(event) {
+        this._super();
+        this.mouse = event.getLocation();
+    },
+    onMouseUp:function(event) {
+        this._super();
+        this.shoot();
+    },
+    shoot:function(){
+        if (/*this.shts == 1 && */(this.mouse.x > 15 && this.mouse.x < 315)) {
+            this.gos();
+        }
     },
     newBubble: function () {
         this.tmpBubble = PP.Bubble.create(this.colorType);
         this.tmpBubble.setPosition(this.player.getPosition());
-        this.addChild(this.tmpBubble, this.depth);
+        this.container.addChild(this.tmpBubble, this.depth);
         this.tmpBubble.colorType = this.colorType;
 
         var ext = 0 | (Math.random() * 50);
@@ -407,6 +445,15 @@ PP.GameLayer = cc.Layer.extend({
         //_parent.girl.colorType = colorType;
     },
     update: function (dt) {
+        var xdis = this.mouse.x - this.player.getPosition().x;
+        var ydis = this.mouse.y - this.player.getPosition().y;
+        var gagy = -(Math.atan2(ydis, xdis) / this.radian - 90);
+        if (gagy < 80 && gagy > -80) {
+            if (gagy != this.player.getRotation()) {
+                this.player.setRotation(gagy);
+            }
+        }
+
         if (this.isStoped == 1) {
             this.tmpBubble.setPosition(cc.pAdd(this.tmpBubble.getPosition(), cc.p(this.xSpeed * dt, this.ySpeed * dt)));
             for (var i = 0; i < this.allBubblesAmount; i++) {
@@ -424,7 +471,7 @@ PP.GameLayer = cc.Layer.extend({
                     for (var j = 0; j < 6; j++) {
                         var nump = np + this.arp[j];
                         var numn = nn + this["arn" + ch][j];
-                        var isExitBubble = this.getChildByTag(nump * 10 + numn);
+                        var isExitBubble = this.container.getChildByTag(nump * 10 + numn);
                         if (isExitBubble == null) {
                             var radian = this.radian * this.gag[j];
                             var tx = tempBubble.getPosition().x + Math.sin(radian) * this.diameter;
@@ -479,8 +526,8 @@ PP.GameLayer = cc.Layer.extend({
                             this.shts = this.dcup();
                         }
                     }
-                    else if (this.getChildByTag(gubl).colorType == 7) {
-                        var bomb = this.getChildByTag(gubl);
+                    else if (this.container.getChildByTag(gubl).colorType == 7) {
+                        var bomb = this.container.getChildByTag(gubl);
                         bomb.removeFromParent(true);
                         tag = gubl;
                         np = Math.floor(tag / 10);
@@ -492,7 +539,7 @@ PP.GameLayer = cc.Layer.extend({
                         for (var k = 0; k < 6; k++) {
                             nump = np + this.arp[k];
                             numn = nn + this["arn" + ch][k];
-                            var child = this.getChildByTag(nump * 10 + numn);
+                            var child = this.container.getChildByTag(nump * 10 + numn);
                             if (child && child.colorType < 9) {
                                 child.removeFromParent(true);
                                 for (var z = 0; z<this.allBubbles.length ; z++) {
@@ -543,7 +590,7 @@ PP.GameLayer = cc.Layer.extend({
             this.gg = this.noj.length;
             var tmpChild;
             for (var i = 0; i < this.gg; i++) {
-                tmpChild = this.getChildByTag(this.noj[i]);
+                tmpChild = this.container.getChildByTag(this.noj[i]);
                 if(tmpChild){
                     tmpChild.setPositionY(tmpChild.getPositionY()+5 + this.u * 4)
                 }
@@ -551,7 +598,7 @@ PP.GameLayer = cc.Layer.extend({
            /* if (this.u == 25) {
                 this.u = this.isStoped = 0;
                 for (var i = 0; i < this.gg; i++) {
-                    tmpChild = this.getChildByTag(this.noj[i]);
+                    tmpChild = this.container.getChildByTag(this.noj[i]);
                     if(tmpChild){
                         tmpChild.removeFromParent(true);
                     }
