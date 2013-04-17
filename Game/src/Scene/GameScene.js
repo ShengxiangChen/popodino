@@ -23,6 +23,21 @@ PP.GameScene = cc.Scene.extend({
     getUILayer:function(){
         return this.uiLayer;
     },
+    levelUp:function(){
+        ++PP.lv;
+        ++PP.lvdlv;
+        if (PP.lvdlv == 5) {
+            PP.lvdlv = 0;
+            ++PP.lvdlv2;
+            PP.lvlvho = 1;
+            if (PP.lvdlv2 > 5) {
+                PP.lvdlv2 = 5;
+            }
+        }
+
+        this.gameLayer.initGameData();
+        this.gameLayer.setting();
+    },
     update:function(dt){
         this.gameLayer.update(dt);
     }

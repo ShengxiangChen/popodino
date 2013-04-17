@@ -1,31 +1,31 @@
 PP.GameLayer = cc.Layer.extend({
-    game: null,
-    mouse: cc.p(0, 0),
-    radian: 0.017453,
-    isStoped: 0,
-    tmpBubble: cc.p(0, 0),
-    _rotation: 0,
-    player: null,
+    game:null,
+    mouse:cc.p(0, 0),
+    radian:0.017453,
+    isStoped:0,
+    tmpBubble:cc.p(0, 0),
+    _rotation:0,
+    player:null,
     container:null,
-    init: function () {
+    init:function () {
         this._super();
         window.layer = this;
         var t = sys.platform;
         var os = sys.os;
         this.setTouchEnabled(true);
         /*if(t = 'browser'){
-            this.setMouseEnabled(true);
-        }
-        else{
-            this.setTouchEnabled(true);
-        }*/
+         this.setMouseEnabled(true);
+         }
+         else{
+         this.setTouchEnabled(true);
+         }*/
 
 
-        if(cc.renderMode = cc.WEBGL){
+        if (cc.renderMode = cc.WEBGL) {
             this.container = cc.SpriteBatchNode.create(Bubble_png);
-            this.addChild(this.container,100);
+            this.addChild(this.container, 100);
         }
-        else{
+        else {
             this.container = this;
         }
 
@@ -35,21 +35,15 @@ PP.GameLayer = cc.Layer.extend({
         this.px = 24;
         this.py = 480 - 52;
         this.poc2 = 3;
-        this.deathy = 400;
+        this.deathy = 80;
         this.allst = 30;
         this.wallc = 0;
-        var blur_filter = [4, 4, 3];
-        var blur_filter0 = [0, 0, 0];
-        var filter_array = [];
-        var filter_array0 = [];
-        filter_array.push(blur_filter);
-        filter_array0.push(blur_filter0);
-        this.poc = parseInt((PP.lv - 1) / this.allst) + this.poc2;
-        this.downc = 18 - PP.dlv2 * 2;
+        //this.poc = parseInt((PP.lv - 1) / this.allst) + this.poc2;
+        //this.downc = 18 - PP.dlv2 * 2;
         this.hcount = 0;
         this.arp = [1, 1, 0, -1, -1, 0];
-        this.arn1 = [-1, 0, 1, 0, -1, -1];
         this.arn0 = [0, 1, 1, 1, 0, -1];
+        this.arn1 = [-1, 0, 1, 0, -1, -1];
         this.gag = [-30, 30, 90, 150, -150, -90];
         this.leftSider = this.px + this.diameter / 2;
         this.rightSider = this.px + this.diameter * 8 - this.diameter / 2;
@@ -57,6 +51,40 @@ PP.GameLayer = cc.Layer.extend({
         this.udg = Math.sqrt(this.diameter * this.diameter - this.diameter / 2 * (this.diameter / 2));
         this.allBubbles = [];
         //this.undeadb();
+        //this.stg = PP.lv % this.allst;
+        /*if (this.stg == 0) {
+            this.stg = this.allst;
+        }
+        if (this.stg % 10 == 0) {
+            this.stg = 0 | (Math.random() * 2 + 90);
+            this.colorType = 7;
+            this.bst = 1;
+        }
+        else {
+            this.colorType = 0 | (Math.random() * 5 + 1);
+            this.bst = 0;
+        }*/
+        this.initGameData();
+        this.allBubblesColorType = [];
+
+        this.isStoped = this.u = this.vib = this.vk = 0;
+        this.ga = 3;
+
+        this.player = cc.Sprite.create(Turret);
+        this.player.setAnchorPoint(cc.p(0.5, 0.31))
+        this.player.setPosition(cc.p(160, 36));
+        this.addChild(this.player, 11);
+
+        var pad = cc.Sprite.create(Pad);
+        pad.setPosition(cc.p(160, 10));
+        this.addChild(pad, 10);
+
+        this.setting();
+        this.newBubble();
+    },
+    initGameData:function(){
+        this.poc = parseInt((PP.lv - 1) / this.allst) + this.poc2;
+        this.downc = 18 - PP.dlv2 * 2;
         this.stg = PP.lv % this.allst;
         if (this.stg == 0) {
             this.stg = this.allst;
@@ -70,28 +98,12 @@ PP.GameLayer = cc.Layer.extend({
             this.colorType = 0 | (Math.random() * 5 + 1);
             this.bst = 0;
         }
-        this.allBubblesColorType = [];
-
-        this.isStoped = this.u = this.vib = this.vk = 0;
-        this.ga = 3;
-
-        this.player = cc.Sprite.create(Turret);
-        this.player.setAnchorPoint(cc.p(0.5,0.31))
-        this.player.setPosition(cc.p(160, 36));
-        this.addChild(this.player,11);
-
-        var pad = cc.Sprite.create(Pad);
-        pad.setPosition(cc.p(160,10));
-        this.addChild(pad,10);
-
-        this.setting(this.stg);
-        this.newBubble();
     },
-    setGame: function (v) {
+    setGame:function (v) {
         this.game = v;
     },
-    setting: function (typenum) {
-        var level = PP.LEVEL["ty" + typenum];
+    setting:function () {
+        var level = PP.LEVEL["ty" + this.stg];
         var nums = level.length;
         var arr = 8;
         var sx = this.px + this.diameter / 2;
@@ -124,7 +136,7 @@ PP.GameLayer = cc.Layer.extend({
             }
         }
     },
-    gos: function () {
+    gos:function () {
         //PP.hrr.i = 0;
         //PP.hrr.gotoAndStop(1);
         //_parent._parent.ssh.gotoAndPlay(2);
@@ -135,7 +147,7 @@ PP.GameLayer = cc.Layer.extend({
         this.allBubblesAmount = this.allBubbles.length;
         ++this.hcount;
     },
-    dcup: function () {
+    dcup:function () {
         var _loc2 = 1;
         var ttem = this.downc - this.hcount;
         if (ttem < 4) {
@@ -145,21 +157,20 @@ PP.GameLayer = cc.Layer.extend({
         if (this.downc == this.hcount) {
             this.alldown();
             this.hcount = 0;
-
-
         }
         if (this.scanOver()) {
+            cc.log("Game Over");
             _loc2 = 0;
             /*_parent.hrr.i = 500;
              _parent._parent.ov.gotoAndPlay(2);*/
         }
         return _loc2;
     },
-    undeadb: function () {
+    undeadb:function () {
         var sx = this.px + this.diameter;
         var sy = this.py - (this.udg - this.diameter / 2);
-        for (var i = 0; i < 7; i++) {
-            var child = PP.Bubble.create();
+        for (var i = 1; i < 7; i++) {
+            var child = PP.Bubble.create(i);
             this.addChild(child, this.depth, parseInt(0 + "" + i));
             child.setPosition(cc.p(sx, sy));
             child.colorType = 9;
@@ -168,7 +179,7 @@ PP.GameLayer = cc.Layer.extend({
             sx = sx + this.diameter;
         }
     },
-    alldown: function () {
+    alldown:function () {
         /* ++this.wallc;
          var _loc3 = Math.random()*2;
          _parent.umb.boy.gotoAndPlay("dn" + _loc3);
@@ -186,7 +197,7 @@ PP.GameLayer = cc.Layer.extend({
          this.allBubbles[i]._y = this[allBubbles[i]]._y + udg;
          }*/
     },
-    search1: function (blna) {
+    search1:function (blna) {
         this.targetBubble = [blna];
         this.nuj = [];
         this.noj = [];
@@ -224,7 +235,7 @@ PP.GameLayer = cc.Layer.extend({
                 for (var j = 0; j < 6; j++) {
                     var nump = np + this.arp[j];
                     var numn = nn + this["arn" + ch][j];
-                    var n = nump * 10 +numn;
+                    var n = nump * 10 + numn;
                     var child = this.container.getChildByTag(n);
                     if (child && child.colorType < 10) {
                         this.res.push(n);
@@ -238,13 +249,13 @@ PP.GameLayer = cc.Layer.extend({
             for (var i = 0; i < ap; i++) {
                 this.targetBubble.push(this.res[i]);
                 /*if (this.targetBubble[idx] != this.res[i]) {
-                    ++idx;
-                    this.targetBubble[idx] = this.res[i];
-                }*/
+                 ++idx;
+                 this.targetBubble[idx] = this.res[i];
+                 }*/
             }
         }
     },
-    search2: function (blna, key) {
+    search2:function (blna, key) {
         this.targetBubble = [blna];
         this.nuj = [];
         this.noj = [];
@@ -290,29 +301,32 @@ PP.GameLayer = cc.Layer.extend({
                     }
                 }
             }
-           /* if(this.res.length  == 0){
-                whi = 0;
-                continue;
-            }*/
+            /* if(this.res.length  == 0){
+             whi = 0;
+             continue;
+             }*/
             this.res.sort();
             this.targetBubble = [];
-           // var idx = -1;
-            for (i = 0; i <  this.res.length; i++) {
+            // var idx = -1;
+            for (i = 0; i < this.res.length; i++) {
                 this.targetBubble.push(this.res[i]);
-               /* if (this.targetBubble[idx] != this.res[i]) {
-                    ++idx;
-                    this.targetBubble[idx] = this.res[i];
-                }*/
+                /* if (this.targetBubble[idx] != this.res[i]) {
+                 ++idx;
+                 this.targetBubble[idx] = this.res[i];
+                 }*/
             }
         }
     },
-    removeSameBubbles: function () {
+    removeSameBubbles:function () {
         //_parent.remv.gotoAndPlay(2);
+        var sco = this.nuj.length;
         if (this.nuj[0].colorType == 6) {
             //_parent.spes.gotoAndPlay(2);
             // _parent.sco = _parent.sco + 2000;
+            this.game.getUILayer().addScore(2000);
         }
-        //_parent.sco = _parent.sco + _loc6 * 10;
+        this.game.getUILayer().addScore(sco * 10);
+        //_parent.sco = _parent.sco + sco * 10;
         //_parent.numv(_parent.sco, "scom", 6);
         for (var i = 0; i < this.nuj.length; ++i) {
             /* this.attachMovie("ppo", "ppo" + depth, depth);
@@ -333,7 +347,7 @@ PP.GameLayer = cc.Layer.extend({
             }
         }
     },
-    inspace: function () {
+    inspace:function () {
         this.noj = [];
         for (i = 0; i < this.allBubbles.length; i++) {
             var finds = 0;
@@ -349,9 +363,9 @@ PP.GameLayer = cc.Layer.extend({
         var kk = this.noj.length;
         for (var i = 0; i < kk; i++) {
             var bubbleLen = this.allBubbles.length;
-            for (var j = 0;j < bubbleLen;j++) {
+            for (var j = 0; j < bubbleLen; j++) {
                 var child = this.allBubbles[j];
-                if(child){
+                if (child) {
                     if (child.getTag() == this.noj[i]) {
                         child.removeFromParent(true);
                         this.allBubbles.splice(j, 1);
@@ -363,7 +377,6 @@ PP.GameLayer = cc.Layer.extend({
         var spe = kk * 20;
         //score
         this.game.getUILayer().addScore(spe);
-        console.log(1)
         /* _parent.sco = _parent.sco + spe;
          _parent.numv(_parent.sco, "scom", 6);
          _parent.spe.sco = spe;
@@ -371,51 +384,59 @@ PP.GameLayer = cc.Layer.extend({
          _parent.spe.i = 0;
          _parent.spe.gotoAndStop(2);*/
     },
-    scanOver: function () {
-        var _loc3 = 0;
-        var _loc2 = this.allBubbles.length;
-        for (var i = 0; i < _loc2; i++) {
-            if (this.allBubbles[i].getPosition().y > this.deathy) {
-                i = _loc2;
-                _loc3 = 1;
+    numv:function (ints, legs) {
+        var _loc3 = 1;
+        for (var i = 0; i < legs; i++) {
+            var _loc2 = parseInt(ints / _loc3) % 10 + 1;
+            this[tgt]["b" + i].gotoAndStop(_loc2);
+            _loc3 = _loc3 * 10;
+        }
+    },
+    scanOver:function () {
+        var isGameOver = false;
+        var len = this.allBubbles.length;
+        for (var i = 0; i < len; i++) {
+            if (this.allBubbles[i].getPosition().y < this.deathy) {
+                i = len;
+                isGameOver = true;
             }
         }
-        return (_loc3);
+        return isGameOver;
     },
-    onTouchesBegan: function (touches) {
+    onTouchesBegan:function (touches) {
         this._super();
         this.mouse = touches[0].getLocation();
     },
-    onTouchesMoved: function (touches) {
+    onTouchesMoved:function (touches) {
         this._super();
         this.mouse = touches[0].getLocation();
     },
-    onTouchesEnded: function (touches) {
+    onTouchesEnded:function (touches) {
         this._super();
         this.shoot();
     },
-    onMouseDown:function(event) {
+    onMouseDown:function (event) {
         this._super();
         this.mouse = event.getLocation();
     },
-    onMouseMoved:function(event){
+    onMouseMoved:function (event) {
         this._super();
         this.mouse = event.getLocation();
     },
-    onMouseDragged:function(event) {
+    onMouseDragged:function (event) {
         this._super();
         this.mouse = event.getLocation();
     },
-    onMouseUp:function(event) {
+    onMouseUp:function (event) {
         this._super();
         this.shoot();
     },
-    shoot:function(){
+    shoot:function () {
         if (/*this.shts == 1 && */(this.mouse.x > 15 && this.mouse.x < 315)) {
             this.gos();
         }
     },
-    newBubble: function () {
+    newBubble:function () {
         this.tmpBubble = PP.Bubble.create(this.colorType);
         this.tmpBubble.setPosition(this.player.getPosition());
         this.container.addChild(this.tmpBubble, this.depth);
@@ -444,7 +465,7 @@ PP.GameLayer = cc.Layer.extend({
         //_parent.girl.girl.yebm.gotoAndStop(colorType);
         //_parent.girl.colorType = colorType;
     },
-    update: function (dt) {
+    update:function (dt) {
         var xdis = this.mouse.x - this.player.getPosition().x;
         var ydis = this.mouse.y - this.player.getPosition().y;
         var gagy = -(Math.atan2(ydis, xdis) / this.radian - 90);
@@ -482,7 +503,7 @@ PP.GameLayer = cc.Layer.extend({
                                 gus = distance;
                                 mmx = tx;
                                 mmy = ty;
-                                gubl = nump * 10 +numn;
+                                gubl = nump * 10 + numn;
                             }
                         }
                     }
@@ -493,7 +514,7 @@ PP.GameLayer = cc.Layer.extend({
                      _parent._parent.flas._y = this.tmpBubble._y = mmy;
                      _parent._parent.flas.gotoAndPlay(2);*/
                     this.tmpBubble.setPosition(cc.p(mmx, mmy));
-                    this.tmpBubble.setTag(gubl);
+                    this.tmpBubble.setTag(gubl)
                     if (this.tmpBubble.colorType < 7) {
                         this.allBubbles.push(this.tmpBubble);
                         this.search2(gubl, this.tmpBubble.colorType);
@@ -507,7 +528,7 @@ PP.GameLayer = cc.Layer.extend({
                     if (this.nuj.length >= this.poc) {
                         //_parent._parent.umb.boy.gotoAndPlay("lve");
                         this.removeSameBubbles();
-                        if(this.allBubbles.length > 0){
+                        if (this.allBubbles.length > 0) {
                             this.search1(this.allBubbles[0].getTag());
                         }
                         if (this.nuj.length == 7) {
@@ -516,7 +537,7 @@ PP.GameLayer = cc.Layer.extend({
                         }
                         if (this.nuj.length != this.allBubbles.length) {
                             //_parent._parent.sen.gotoAndPlay("good");
-                           this.inspace();
+                            this.inspace();
                             //this.god.isStoped = 1;
                         }
                         else if (this.cler == 1) {
@@ -542,14 +563,14 @@ PP.GameLayer = cc.Layer.extend({
                             var child = this.container.getChildByTag(nump * 10 + numn);
                             if (child && child.colorType < 9) {
                                 child.removeFromParent(true);
-                                for (var z = 0; z<this.allBubbles.length ; z++) {
+                                for (var z = 0; z < this.allBubbles.length; z++) {
                                     if (child == this.allBubbles[z]) {
                                         this.allBubbles.splice(z, 1);
                                     }
                                 }
                             }
                         }
-                        if(this.allBubbles.length > 0){
+                        if (this.allBubbles.length > 0) {
                             this.search1(this.allBubbles[0].getTag());
                         }
                         if (this.nuj.length == 7) {
@@ -585,30 +606,36 @@ PP.GameLayer = cc.Layer.extend({
                 this.xSpeed = this.xSpeed * -1;
             }
 
+            /* ++this.u;
+             this.gg = this.noj.length;
+             var tmpChild;
+             for (var i = 0; i < this.gg; i++) {
+             tmpChild = this.container.getChildByTag(this.noj[i]);
+             if(tmpChild){
+             tmpChild.setPositionY(tmpChild.getPositionY()+5 + this.u * 4)
+             }
+             }*/
+            /* if (this.u == 25) {
+             this.u = this.isStoped = 0;
+             for (var i = 0; i < this.gg; i++) {
+             tmpChild = this.container.getChildByTag(this.noj[i]);
+             if(tmpChild){
+             tmpChild.removeFromParent(true);
+             }
+             */
+            /*if (this.sht.cler == 1) {
+             this.shts = 0;
+             continue;
+             }
+             this.shts = this.sht.dcup();*/
+            /*
+             }
+             }*/
 
-           /* ++this.u;
-            this.gg = this.noj.length;
-            var tmpChild;
-            for (var i = 0; i < this.gg; i++) {
-                tmpChild = this.container.getChildByTag(this.noj[i]);
-                if(tmpChild){
-                    tmpChild.setPositionY(tmpChild.getPositionY()+5 + this.u * 4)
-                }
-            }*/
-           /* if (this.u == 25) {
-                this.u = this.isStoped = 0;
-                for (var i = 0; i < this.gg; i++) {
-                    tmpChild = this.container.getChildByTag(this.noj[i]);
-                    if(tmpChild){
-                        tmpChild.removeFromParent(true);
-                    }
-                    *//*if (this.sht.cler == 1) {
-                        this.shts = 0;
-                        continue;
-                    }
-                    this.shts = this.sht.dcup();*//*
-                }
-            }*/
+            if(this.allBubbles.length  == 0){
+                cc.log("Game Start");
+                this.game.levelUp();
+            }
         }
 
 
