@@ -30,7 +30,7 @@ PP.GameLayer = cc.Layer.extend({
         }
 
         this.noj = [];
-        this.speed = 1116;
+        this.speed = 900;
         this.diameter = 34;
         this.px = 24;
         this.py = 480 - 52;
@@ -50,20 +50,20 @@ PP.GameLayer = cc.Layer.extend({
         this.depth = 5000;
         this.udg = Math.sqrt(this.diameter * this.diameter - this.diameter / 2 * (this.diameter / 2));
         this.allBubbles = [];
-        //this.undeadb();
+        this.undeadBubbles();
         //this.stg = PP.lv % this.allst;
         /*if (this.stg == 0) {
-            this.stg = this.allst;
-        }
-        if (this.stg % 10 == 0) {
-            this.stg = 0 | (Math.random() * 2 + 90);
-            this.colorType = 7;
-            this.bst = 1;
-        }
-        else {
-            this.colorType = 0 | (Math.random() * 5 + 1);
-            this.bst = 0;
-        }*/
+         this.stg = this.allst;
+         }
+         if (this.stg % 10 == 0) {
+         this.stg = 0 | (Math.random() * 2 + 90);
+         this.colorType = 7;
+         this.bst = 1;
+         }
+         else {
+         this.colorType = 0 | (Math.random() * 5 + 1);
+         this.bst = 0;
+         }*/
         this.initGameData();
         this.allBubblesColorType = [];
 
@@ -82,7 +82,7 @@ PP.GameLayer = cc.Layer.extend({
         this.setting();
         this.newBubble();
     },
-    initGameData:function(){
+    initGameData:function () {
         this.poc = parseInt((PP.lv - 1) / this.allst) + this.poc2;
         this.downc = 18 - PP.dlv2 * 2;
         this.stg = PP.lv % this.allst;
@@ -166,13 +166,14 @@ PP.GameLayer = cc.Layer.extend({
         }
         return _loc2;
     },
-    undeadb:function () {
+    undeadBubbles:function () {
         var sx = this.px + this.diameter;
-        var sy = this.py - (this.udg - this.diameter / 2);
-        for (var i = 1; i < 7; i++) {
-            var child = PP.Bubble.create(i);
-            this.addChild(child, this.depth, parseInt(0 + "" + i));
+        var sy = this.py + (this.udg - this.diameter / 2);
+        for (var i = 0; i < 7; i++) {
+            var child = PP.Bubble.create(1);
+            this.addChild(child, this.depth, i);
             child.setPosition(cc.p(sx, sy));
+            //child.setVisible(false);
             child.colorType = 9;
             this.allBubbles.push(child);
             ++this.depth;
@@ -236,22 +237,19 @@ PP.GameLayer = cc.Layer.extend({
                     var nump = np + this.arp[j];
                     var numn = nn + this["arn" + ch][j];
                     var n = nump * 10 + numn;
-                    var child = this.container.getChildByTag(n);
-                    if (child && child.colorType < 10) {
-                        this.res.push(n);
+                    if (n != -1) {
+                        var child = this.container.getChildByTag(n);
+                        if (child && child.colorType < 10) {
+                            this.res.push(n);
+                        }
                     }
                 }
             }
             this.res.sort();
             var ap = this.res.length;
             this.targetBubble = [];
-            //var idx = -1;
             for (var i = 0; i < ap; i++) {
                 this.targetBubble.push(this.res[i]);
-                /*if (this.targetBubble[idx] != this.res[i]) {
-                 ++idx;
-                 this.targetBubble[idx] = this.res[i];
-                 }*/
             }
         }
     },
@@ -295,25 +293,18 @@ PP.GameLayer = cc.Layer.extend({
                     var nump = np + this.arp[j];
                     var numn = nn + this["arn" + ch][j];
                     var n = nump * 10 + numn;
-                    var child = this.container.getChildByTag(n);
-                    if (child && child.colorType == key) {
-                        this.res.push(n);
+                    if (n != -1) {
+                        var child = this.container.getChildByTag(n);
+                        if (child && child.colorType == key) {
+                            this.res.push(n);
+                        }
                     }
                 }
             }
-            /* if(this.res.length  == 0){
-             whi = 0;
-             continue;
-             }*/
             this.res.sort();
             this.targetBubble = [];
-            // var idx = -1;
             for (i = 0; i < this.res.length; i++) {
                 this.targetBubble.push(this.res[i]);
-                /* if (this.targetBubble[idx] != this.res[i]) {
-                 ++idx;
-                 this.targetBubble[idx] = this.res[i];
-                 }*/
             }
         }
     },
@@ -333,16 +324,13 @@ PP.GameLayer = cc.Layer.extend({
              this["ppo" + depth]._x = this[nuj[i]]._x;
              this["ppo" + depth]._y = this[nuj[i]]._y;
              ++depth;*/
-
             var bubbleLen = this.allBubbles.length;
             for (var j = 0; j < bubbleLen; j++) {
                 var child = this.allBubbles[j];
-                if (child) {
-                    if (child.getTag() == parseInt(this.nuj[i])) {
-                        child.removeFromParent(true);
-                        this.allBubbles.splice(j, 1);
-                        j = bubbleLen;
-                    }
+                if (child && child.getTag() == this.nuj[i]) {
+                    child.removeFromParent(true);
+                    this.allBubbles.splice(j, 1);
+                    j = bubbleLen;
                 }
             }
         }
@@ -365,13 +353,11 @@ PP.GameLayer = cc.Layer.extend({
             var bubbleLen = this.allBubbles.length;
             for (var j = 0; j < bubbleLen; j++) {
                 var child = this.allBubbles[j];
-                if (child) {
-                    if (child.getTag() == this.noj[i]) {
+                    if (child && child.colorType < 9 && child.getTag() == this.noj[i]) {
                         child.removeFromParent(true);
                         this.allBubbles.splice(j, 1);
                         j = bubbleLen;
                     }
-                }
             }
         }
         var spe = kk * 20;
@@ -405,11 +391,11 @@ PP.GameLayer = cc.Layer.extend({
     },
     onTouchesBegan:function (touches) {
         this._super();
-        this.mouse = touches[0].getLocation();
+        this.rotateWeapon(touches);
     },
     onTouchesMoved:function (touches) {
         this._super();
-        this.mouse = touches[0].getLocation();
+        this.rotateWeapon(touches);
     },
     onTouchesEnded:function (touches) {
         this._super();
@@ -417,15 +403,15 @@ PP.GameLayer = cc.Layer.extend({
     },
     onMouseDown:function (event) {
         this._super();
-        this.mouse = event.getLocation();
+        this.rotateWeapon(touches);
     },
     onMouseMoved:function (event) {
         this._super();
-        this.mouse = event.getLocation();
+        this.rotateWeapon(touches);
     },
     onMouseDragged:function (event) {
         this._super();
-        this.mouse = event.getLocation();
+        this.rotateWeapon(touches);
     },
     onMouseUp:function (event) {
         this._super();
@@ -434,6 +420,17 @@ PP.GameLayer = cc.Layer.extend({
     shoot:function () {
         if (/*this.shts == 1 && */(this.mouse.x > 15 && this.mouse.x < 315)) {
             this.gos();
+        }
+    },
+    rotateWeapon:function (touches) {
+        this.mouse = touches[0].getLocation();
+        var xdis = this.mouse.x - this.player.getPosition().x;
+        var ydis = this.mouse.y - this.player.getPosition().y;
+        var gagy = -(Math.atan2(ydis, xdis) / this.radian - 90);
+        if (gagy < 80 && gagy > -80) {
+            if (gagy != this.player.getRotation()) {
+                this.player.setRotation(gagy);
+            }
         }
     },
     newBubble:function () {
@@ -466,15 +463,6 @@ PP.GameLayer = cc.Layer.extend({
         //_parent.girl.colorType = colorType;
     },
     update:function (dt) {
-        var xdis = this.mouse.x - this.player.getPosition().x;
-        var ydis = this.mouse.y - this.player.getPosition().y;
-        var gagy = -(Math.atan2(ydis, xdis) / this.radian - 90);
-        if (gagy < 80 && gagy > -80) {
-            if (gagy != this.player.getRotation()) {
-                this.player.setRotation(gagy);
-            }
-        }
-
         if (this.isStoped == 1) {
             this.tmpBubble.setPosition(cc.pAdd(this.tmpBubble.getPosition(), cc.p(this.xSpeed * dt, this.ySpeed * dt)));
             for (var i = 0; i < this.allBubblesAmount; i++) {
@@ -514,7 +502,7 @@ PP.GameLayer = cc.Layer.extend({
                      _parent._parent.flas._y = this.tmpBubble._y = mmy;
                      _parent._parent.flas.gotoAndPlay(2);*/
                     this.tmpBubble.setPosition(cc.p(mmx, mmy));
-                    this.tmpBubble.setTag(gubl)
+                    this.tmpBubble.setTag(gubl);
                     if (this.tmpBubble.colorType < 7) {
                         this.allBubbles.push(this.tmpBubble);
                         this.search2(gubl, this.tmpBubble.colorType);
@@ -529,7 +517,8 @@ PP.GameLayer = cc.Layer.extend({
                         //_parent._parent.umb.boy.gotoAndPlay("lve");
                         this.removeSameBubbles();
                         if (this.allBubbles.length > 0) {
-                            this.search1(this.allBubbles[0].getTag());
+                            //this.search1(this.allBubbles[0].getTag());
+                            this.search1(0);
                         }
                         if (this.nuj.length == 7) {
                             //_parent._parent.cll.gotoAndPlay(2);
@@ -571,7 +560,8 @@ PP.GameLayer = cc.Layer.extend({
                             }
                         }
                         if (this.allBubbles.length > 0) {
-                            this.search1(this.allBubbles[0].getTag());
+                            //this.search1(this.allBubbles[0].getTag());
+                            this.search1(0);
                         }
                         if (this.nuj.length == 7) {
                             //_parent._parent.cll.gotoAndPlay(2);
@@ -632,7 +622,7 @@ PP.GameLayer = cc.Layer.extend({
              }
              }*/
 
-            if(this.allBubbles.length  == 0){
+            if (this.allBubbles.length == 0) {
                 cc.log("Game Start");
                 this.game.levelUp();
             }
