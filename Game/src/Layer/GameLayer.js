@@ -42,8 +42,8 @@ PP.GameLayer = cc.Layer.extend({
         //this.downc = 18 - PP.dlv2 * 2;
         this.hcount = 0;
         this.arp = [1, 1, 0, -1, -1, 0];
-        this.arn0 = [0, 1, 1, 1, 0, -1];
         this.arn1 = [-1, 0, 1, 0, -1, -1];
+        this.arn0 = [0, 1, 1, 1, 0, -1];
         this.gag = [-30, 30, 90, 150, -150, -90];
         this.leftSider = this.px + this.diameter / 2;
         this.rightSider = this.px + this.diameter * 8 - this.diameter / 2;
@@ -169,11 +169,11 @@ PP.GameLayer = cc.Layer.extend({
     undeadBubbles:function () {
         var sx = this.px + this.diameter;
         var sy = this.py + (this.udg - this.diameter / 2);
-        for (var i = 0; i < 7; i++) {
+        for (var i = 1; i < 8; i++) {
             var child = PP.Bubble.create(1);
-            this.addChild(child, this.depth, i);
+            this.container.addChild(child, this.depth, i);
             child.setPosition(cc.p(sx, sy));
-            //child.setVisible(false);
+            child.setVisible(false);
             child.colorType = 9;
             this.allBubbles.push(child);
             ++this.depth;
@@ -516,15 +516,12 @@ PP.GameLayer = cc.Layer.extend({
                     if (this.nuj.length >= this.poc) {
                         //_parent._parent.umb.boy.gotoAndPlay("lve");
                         this.removeSameBubbles();
-                        if (this.allBubbles.length > 0) {
-                            //this.search1(this.allBubbles[0].getTag());
-                            this.search1(0);
-                        }
+                        this.search1(0);
                         if (this.nuj.length == 7) {
                             //_parent._parent.cll.gotoAndPlay(2);
                             this.cler = 1;
                         }
-                        if (this.nuj.length != this.allBubbles.length) {
+                        if (this.nuj.length != this.allBubbles.length ) {
                             //_parent._parent.sen.gotoAndPlay("good");
                             this.inspace();
                             //this.god.isStoped = 1;
@@ -559,10 +556,7 @@ PP.GameLayer = cc.Layer.extend({
                                 }
                             }
                         }
-                        if (this.allBubbles.length > 0) {
-                            //this.search1(this.allBubbles[0].getTag());
-                            this.search1(0);
-                        }
+                        this.search1(0);
                         if (this.nuj.length == 7) {
                             //_parent._parent.cll.gotoAndPlay(2);
                             this.cler = 1;
@@ -622,7 +616,7 @@ PP.GameLayer = cc.Layer.extend({
              }
              }*/
 
-            if (this.allBubbles.length == 0) {
+            if (this.allBubbles.length == 7) {
                 cc.log("Game Start");
                 this.game.levelUp();
             }

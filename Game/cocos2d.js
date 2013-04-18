@@ -41,9 +41,15 @@
             'src/Config/Constant.js',
             'src/resource.js',
             'src/Unit/Bubble.js',
+
+            //Layer
             'src/Layer/GameLayer.js',
             'src/Layer/BackgroundLayer.js',
+            'src/Layer/MainMenuLayer.js',
             'src/Layer/UILayer.js',
+
+            //Scene
+            'src/Scene/MainMenuScene.js',
             'src/Scene/GameScene.js'
         ]
     };

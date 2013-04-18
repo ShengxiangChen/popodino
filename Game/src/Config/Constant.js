@@ -1,5 +1,19 @@
 var PP = PP = {};
 
+PP.Version = "1.0.0";
+
+//资源
+PP.Res = {};
+
+//z order
+PP.zOrder = {
+    bg:0,
+    unit:2,
+    effect:3,
+    ui:999,
+    top:1000
+};
+
 PP.BubbleType = {
     Bule:1,
     Yellow:2,

@@ -25,6 +25,27 @@
  THE SOFTWARE.
  ****************************************************************************/
 
+PP.AnchorPointCenter = cc.p(0.5, 0.5);
+PP.AnchorPointTop = cc.p(0.5, 1);
+PP.AnchorPointTopRight = cc.p(1, 1);
+PP.AnchorPointRight = cc.p(1, 0.5);
+PP.AnchorPointBottomRight = cc.p(1, 0);
+PP.AnchorPointBottom = cc.p(0.5, 0);
+PP.AnchorPointBottomLeft = cc.p(0, 0);
+PP.AnchorPointLeft = cc.p(0, 0.5);
+PP.AnchorPointTopLeft = cc.p(0, 1);
+
+PP.pt = {};
+PP.rcVisible = cc.rect(0, 0, 0, 0);
+PP.pt.Center = cc.p(0, 0);
+PP.pt.Top = cc.p(0, 0);
+PP.pt.TopRight = cc.p(0, 0);
+PP.pt.Right = cc.p(0, 0);
+PP.pt.BottomRight = cc.p(0, 0);
+PP.pt.Bottom = cc.p(0, 0);
+PP.pt.Left = cc.p(0, 0);
+PP.pt.TopLeft = cc.p(0, 0);
+
 var cocos2dApp = cc.Application.extend({
     config:document['ccConfig'],
     ctor:function (scene) {
@@ -51,11 +72,91 @@ var cocos2dApp = cc.Application.extend({
         director.setAnimationInterval(1.0 / this.config['frameRate']);
 
         //load resources
-        cc.Loader.preload(g_ressources, function () {
+        cc.Loader.preload(g_mainmenu, function () {
             cc.Director.getInstance().replaceScene(new this.startScene());
         }, this);
 
         return true;
     }
 });
-var myApp = new cocos2dApp(PP.GameScene);
+var myApp = new cocos2dApp(PP.MainMenuScene);
+
+PP.VisibleRect = {
+    rect:function () {
+        if (PP.rcVisible.size.width == 0) {
+            var s = cc.Director.getInstance().getWinSize();
+            PP.rcVisible = cc.rect(0, 0, s.width, s.height);
+        }
+        return PP.rcVisible;
+    },
+    center:function () {
+        if (PP.pt.Center.x == 0) {
+            var rc = this.rect();
+            PP.pt.Center.x = rc.origin.x + rc.size.width / 2;
+            PP.pt.Center.y = rc.origin.y + rc.size.height / 2;
+        }
+        return PP.pt.Center;
+    },
+    top:function () {
+        if (PP.pt.Top.x == 0) {
+            var rc = this.rect();
+            PP.pt.Top.x = rc.origin.x + rc.size.width / 2;
+            PP.pt.Top.y = rc.origin.y + rc.size.height;
+        }
+        return PP.pt.Top;
+    },
+    topRight:function () {
+        if (PP.pt.TopRight.x == 0) {
+            var rc = this.rect();
+            PP.pt.TopRight.x = rc.origin.x + rc.size.width;
+            PP.pt.TopRight.y = rc.origin.y + rc.size.height;
+        }
+        return PP.pt.TopRight;
+    },
+    right:function () {
+        if (PP.pt.Right.x == 0) {
+            var rc = this.rect();
+            PP.pt.Right.x = rc.origin.x + rc.size.width;
+            PP.pt.Right.y = rc.origin.y + rc.size.height / 2;
+        }
+        return PP.pt.Right;
+    },
+    bottomRight:function () {
+        if (PP.pt.BottomRight.x == 0) {
+            var rc = this.rect();
+            PP.pt.BottomRight.x = rc.origin.x + rc.size.width;
+            PP.pt.BottomRight.y = rc.origin.y;
+        }
+        return PP.pt.BottomRight;
+    },
+    bottom:function () {
+        if (PP.pt.Bottom.x == 0) {
+            var rc = this.rect();
+            PP.pt.Bottom.x = rc.origin.x + rc.size.width / 2;
+            PP.pt.Bottom.y = rc.origin.y;
+        }
+        return PP.pt.Bottom;
+    },
+    bottomLeft:function () {
+        return this.rect().origin;
+    },
+    left:function () {
+        if (PP.pt.Left.x == 0) {
+            var rc = this.rect();
+            PP.pt.Left.x = rc.origin.x;
+            PP.pt.Left.y = rc.origin.y + rc.size.height / 2;
+        }
+        return PP.pt.Left;
+    },
+    topLeft:function () {
+        if (PP.pt.TopLeft.x == 0) {
+            var rc = this.rect();
+            PP.pt.TopLeft.x = rc.origin.x;
+            PP.pt.TopLeft.y = rc.origin.y + rc.size.height;
+        }
+        return PP.pt.TopLeft;
+    }
+};
+
+PP.ScreenWidth = PP.VisibleRect.rect().size.width;
+PP.ScreenHeight = PP.VisibleRect.rect().size.height;

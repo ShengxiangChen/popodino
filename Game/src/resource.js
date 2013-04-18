@@ -1,3 +1,14 @@
+
+var MainMenu_plist = "res/mainmenu_atlas.plist";
+var MainMenu_png = "res/mainmenu_atlas.png";
+var MainMenuBg = "res/mainmenu_bg.jpg";
+
+var g_mainmenu = [
+    {src:MainMenu_plist},
+    {src:MainMenu_png},
+    {src:MainMenuBg}
+];
+
 var Bubble_plist = "res/bubbles.plist";
 var Bubble_png = "res/bubbles.png";
 var Anim_plist = "res/anim.plist";
