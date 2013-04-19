@@ -70,6 +70,19 @@
                 <string>{164,161}</string>
             </dict>
             <key>couple02.png</key>
+                        <dict>
+                            <key>frame</key>
+                            <string>{{198,190},{148,157}}</string>
+                            <key>offset</key>
+                            <string>{-5,-2}</string>
+                            <key>rotated</key>
+                            <false/>
+                            <key>sourceColorRect</key>
+                            <string>{{3,4},{148,157}}</string>
+                            <key>sourceSize</key>
+                            <string>{164,161}</string>
+                        </dict>
+            <key>couple03.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{2,329},{160,161}}</string>
@@ -79,19 +92,6 @@
                 <false/>
                 <key>sourceColorRect</key>
                 <string>{{3,0},{160,161}}</string>
-                <key>sourceSize</key>
-                <string>{164,161}</string>
-            </dict>
-            <key>couple03.png</key>
-            <dict>
-                <key>frame</key>
-                <string>{{198,190},{148,157}}</string>
-                <key>offset</key>
-                <string>{-5,-2}</string>
-                <key>rotated</key>
-                <false/>
-                <key>sourceColorRect</key>
-                <string>{{3,4},{148,157}}</string>
                 <key>sourceSize</key>
                 <string>{164,161}</string>
             </dict>

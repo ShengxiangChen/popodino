@@ -43,3 +43,9 @@ PP.GameScene = cc.Scene.extend({
     }
 
 });
+
+PP.GameScene.create = function(){
+    var scene = new PP.GameScene();
+    scene.init();
+    return scene;
+};

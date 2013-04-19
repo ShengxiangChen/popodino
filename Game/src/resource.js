@@ -18,7 +18,7 @@ var GameBackground = "res/bg.jpg";
 var Turret = "res/turret.png";
 var Pad = "res/pad.png";
 
-var g_ressources = [
+var g_maingame = [
     {src:Bubble_plist},
     {src:Bubble_png},
     {src:Anim_plist},
