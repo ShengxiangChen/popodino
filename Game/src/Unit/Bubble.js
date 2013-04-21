@@ -1,10 +1,7 @@
 PP.Bubble = cc.Sprite.extend({
-    ctor:function(){
-        this._super();
-    },
-    initWithType:function(type){
+    initWithType:function(colorType){
         var filename;
-        switch (type){
+        switch (colorType){
             case PP.BubbleType.Bule:
                 filename = "blue.png";
                 break;
@@ -28,6 +25,9 @@ PP.Bubble = cc.Sprite.extend({
                 break;
         }
         this.initWithSpriteFrameName(filename);
+    },
+    setColorType:function(colorType){
+        this.initWithType(colorType);
     }
 });
 

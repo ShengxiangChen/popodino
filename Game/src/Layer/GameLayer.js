@@ -5,7 +5,7 @@ PP.GameLayer = cc.Layer.extend({
     isStoped:0,
     tmpBubble:cc.p(0, 0),
     _rotation:0,
-    player:null,
+    turret:null,
     container:null,
     init:function () {
         this._super();
@@ -37,7 +37,7 @@ PP.GameLayer = cc.Layer.extend({
         this.poc2 = 3;
         this.deathy = 80;
         this.allst = 30;
-        this.wallc = 0;
+        this.wallPosY = 0;
         //this.poc = parseInt((PP.lv - 1) / this.allst) + this.poc2;
         //this.downc = 18 - PP.dlv2 * 2;
         this.hcount = 0;
@@ -64,21 +64,24 @@ PP.GameLayer = cc.Layer.extend({
          this.colorType = 0 | (Math.random() * 5 + 1);
          this.bst = 0;
          }*/
-        this.initGameData();
+
         this.allBubblesColorType = [];
 
         this.isStoped = this.u = this.vib = this.vk = 0;
         this.ga = 3;
 
-        this.player = cc.Sprite.create(Turret);
-        this.player.setAnchorPoint(cc.p(0.5, 0.31))
-        this.player.setPosition(cc.p(160, 36));
-        this.addChild(this.player, 11);
+        this.turret = cc.Sprite.create(Turret);
+        this.turret.setAnchorPoint(cc.p(0.5, 0.31));
+        this.turret.setPosition(cc.pAdd(PP.VisibleRect.bottom(),cc.p(0,46)));
+        this.addChild(this.turret, 11);
 
         var pad = cc.Sprite.create(Pad);
-        pad.setPosition(cc.p(160, 10));
+        pad.setPosition(cc.pAdd(PP.VisibleRect.bottom(),cc.p(0,16)));
         this.addChild(pad, 10);
-
+    },
+    onEnter:function(){
+        this._super();
+        this.initGameData();
         this.setting();
         this.newBubble();
     },
@@ -98,6 +101,7 @@ PP.GameLayer = cc.Layer.extend({
             this.colorType = 0 | (Math.random() * 5 + 1);
             this.bst = 0;
         }
+        this.game.getBgLayer().resetWall();
     },
     setGame:function (v) {
         this.game = v;
@@ -142,8 +146,8 @@ PP.GameLayer = cc.Layer.extend({
         //_parent._parent.ssh.gotoAndPlay(2);
         this.shts = 0;
         this.isStoped = 1;
-        this.xSpeed = Math.sin(this.radian * this.player.getRotation()) * this.speed;
-        this.ySpeed = Math.cos(this.radian * this.player.getRotation()) * this.speed;
+        this.xSpeed = Math.sin(this.radian * this.turret.getRotation()) * this.speed;
+        this.ySpeed = Math.cos(this.radian * this.turret.getRotation()) * this.speed;
         this.allBubblesAmount = this.allBubbles.length;
         ++this.hcount;
     },
@@ -154,8 +158,8 @@ PP.GameLayer = cc.Layer.extend({
             // this.god.vib = ttem;
             //this.god.ban = this.allBubbles.length;
         }
-        if (this.downc == this.hcount) {
-            this.alldown();
+        if (this.downc <= this.hcount) {
+            this.allGoDown();
             this.hcount = 0;
         }
         if (this.scanOver()) {
@@ -180,23 +184,22 @@ PP.GameLayer = cc.Layer.extend({
             sx = sx + this.diameter;
         }
     },
-    alldown:function () {
-        /* ++this.wallc;
-         var _loc3 = Math.random()*2;
-         _parent.umb.boy.gotoAndPlay("dn" + _loc3);
-         _parent.sen.gotoAndPlay("bad");
-         _parent.umb._y = _parent.umb._y - 15;
-         if (wallc == 6) {
-         _parent.rbt.gotoAndStop(2);
-         }
-         _parent.wall._y = _parent.wall._y + udg;
-         _parent.wall._x = 331;
-         _parent.mit.gotoAndPlay(2);
-         var allBubblesAmount = this.allBubbles.length;
-         for (var i = 0; i < allBubblesAmount; i++) {
-         this.allBubbles[i].bb._x = 0;
-         this.allBubbles[i]._y = this[allBubbles[i]]._y + udg;
+    allGoDown:function () {
+         ++this.wallPosY;
+         //var _loc3 = Math.random()*2;
+         //_parent.umb.boy.gotoAndPlay("dn" + _loc3);
+         //_parent.sen.gotoAndPlay("bad");
+         //_parent.umb._y = _parent.umb._y - 15;
+        /* if (this.wallPosY == 6) {
+              _parent.rbt.gotoAndStop(2);
          }*/
+        this.game.getBgLayer().wallGoDown(this.udg);
+        //this.mit.gotoAndPlay(2);
+        var bubble;
+         for (var i = 0; i < this.allBubbles.length; i++) {
+               bubble = this.allBubbles[i];
+             bubble.setPosition(cc.pSub(bubble.getPosition(),cc.p(0,this.udg)));
+         }
     },
     search1:function (blna) {
         this.targetBubble = [blna];
@@ -424,18 +427,18 @@ PP.GameLayer = cc.Layer.extend({
     },
     rotateWeapon:function (touches) {
         this.mouse = touches[0].getLocation();
-        var xdis = this.mouse.x - this.player.getPosition().x;
-        var ydis = this.mouse.y - this.player.getPosition().y;
+        var xdis = this.mouse.x - this.turret.getPosition().x;
+        var ydis = this.mouse.y - this.turret.getPosition().y;
         var gagy = -(Math.atan2(ydis, xdis) / this.radian - 90);
         if (gagy < 80 && gagy > -80) {
-            if (gagy != this.player.getRotation()) {
-                this.player.setRotation(gagy);
+            if (gagy != this.turret.getRotation()) {
+                this.turret.setRotation(gagy);
             }
         }
     },
     newBubble:function () {
         this.tmpBubble = PP.Bubble.create(this.colorType);
-        this.tmpBubble.setPosition(this.player.getPosition());
+        this.tmpBubble.setPosition(this.turret.getPosition());
         this.container.addChild(this.tmpBubble, this.depth);
         this.tmpBubble.colorType = this.colorType;
 
@@ -459,8 +462,7 @@ PP.GameLayer = cc.Layer.extend({
             this.colorType = this.allBubblesColorType[uem];
         }
         ++this.depth;
-        //_parent.girl.girl.yebm.gotoAndStop(colorType);
-        //_parent.girl.colorType = colorType;
+        this.game.getUILayer().sister.setBubbleType(this.colorType);
     },
     update:function (dt) {
         if (this.isStoped == 1) {

@@ -3,6 +3,7 @@ PP.MainMenuLayer = cc.Layer.extend({
     flyingCat02:null,
     flyingCat03:null,
     dancingCat:null,
+    runningCat:null,
     couple:null,
     balloon:null,
     heart:null,
@@ -90,9 +91,23 @@ PP.MainMenuLayer = cc.Layer.extend({
         this.dancingCat = cc.Sprite.createWithSpriteFrameName("dancingCat01.png");
         this.addChild(this.dancingCat, PP.zOrder.ui + 1);
         this.dancingCat.setVisible(false);
-        this.dancingCat.setPosition(cc.p(100, 100))
         this.dancingCat.runAction(dancingCatAction);
         this.dancingCat.pauseSchedulerAndActions();
+
+        animFrames = [];
+         spriteFrameCache = cc.SpriteFrameCache.getInstance();
+        for (var i = 1; i <= 6; i++) {
+            var localAtlasSprite = spriteFrameCache.getSpriteFrame("runningCat0" + i + ".png");
+            animFrames.push(localAtlasSprite);
+        }
+         coupleAnim = cc.Animation.create(animFrames, 0.2);
+         dancingCatAction = cc.RepeatForever.create(cc.Animate.create(coupleAnim));
+
+        this.runningCat = cc.Sprite.createWithSpriteFrameName("runningCat01.png");
+        this.addChild(this.runningCat, PP.zOrder.ui + 1);
+        this.runningCat.setPosition(cc.pAdd(PP.VisibleRect.bottomLeft(),cc.p(50,60)));
+        this.runningCat.setFlipX(true);
+        this.runningCat.runAction(dancingCatAction);
     },
     onEnter:function () {
         this._super();
