@@ -1,13 +1,57 @@
 PP.GameLayer = cc.Layer.extend({
-    game:null,
-    mouse:cc.p(0, 0),
-    radian:0.017453,
-    isStoped:0,
-    tmpBubble:cc.p(0, 0),
-    _rotation:0,
-    turret:null,
-    container:null,
-    init:function () {
+    game: null,
+    mouse: cc.p(0, 0),
+    radian: 0.017453,
+    tmpBubble: cc.p(0, 0),
+    turret: null,
+    container: null,
+    speed: 900,
+    diameter: 34,
+    px: 24,
+    py: 428,
+    poc2: 3,
+    deathy: 80,
+    allst: 30,
+    wallPosY: 0,
+    hitCount: 0,
+    depth: 5000,
+    yGap: null,
+    xGap1: null,
+    xGap0: null,
+    arrDistance: null,
+    leftSider: 0,
+    rightSider: 0,
+    allBubbles: null,
+    gapDistance: 0,
+    dontNeedToDeleted: null,
+    needToBeDeleted: null,
+    res: null,
+    originBubbles: null,
+    allBubblesColorType: null,
+    xDvalue: 3,
+    stoped: 0,
+    u: 0,
+    dvalueHitCount: 0,
+    currentDt: 0,
+    downCount: 0,
+    poc: 0,
+    curLevel: 0,
+    bst: 0,
+    shts:1,
+    ctor: function () {
+        this._super();
+        this.yGap = [1, 1, 0, -1, -1, 0];
+        this.xGap1 = [-1, 0, 1, 0, -1, -1];
+        this.xGap0 = [0, 1, 1, 1, 0, -1];
+        this.arrDistance = [-30, 30, 90, 150, -150, -90];
+        this.leftSider = this.px + this.diameter / 2;
+        this.rightSider = this.px + this.diameter * 8 - this.diameter / 2;
+        this.gapDistance = Math.sqrt(this.diameter * this.diameter - this.diameter / 2 * (this.diameter / 2));
+        this.allBubbles = [];
+        this.dontNeedToDeleted = [];
+        this.allBubblesColorType = [];
+    },
+    init: function () {
         this._super();
         window.layer = this;
         var t = sys.platform;
@@ -29,71 +73,32 @@ PP.GameLayer = cc.Layer.extend({
             this.container = this;
         }
 
-        this.noj = [];
-        this.speed = 900;
-        this.diameter = 34;
-        this.px = 24;
-        this.py = 480 - 52;
-        this.poc2 = 3;
-        this.deathy = 80;
-        this.allst = 30;
-        this.wallPosY = 0;
-        //this.poc = parseInt((PP.lv - 1) / this.allst) + this.poc2;
-        //this.downc = 18 - PP.dlv2 * 2;
-        this.hcount = 0;
-        this.arp = [1, 1, 0, -1, -1, 0];
-        this.arn1 = [-1, 0, 1, 0, -1, -1];
-        this.arn0 = [0, 1, 1, 1, 0, -1];
-        this.gag = [-30, 30, 90, 150, -150, -90];
-        this.leftSider = this.px + this.diameter / 2;
-        this.rightSider = this.px + this.diameter * 8 - this.diameter / 2;
-        this.depth = 5000;
-        this.udg = Math.sqrt(this.diameter * this.diameter - this.diameter / 2 * (this.diameter / 2));
-        this.allBubbles = [];
         this.undeadBubbles();
-        //this.stg = PP.lv % this.allst;
-        /*if (this.stg == 0) {
-         this.stg = this.allst;
-         }
-         if (this.stg % 10 == 0) {
-         this.stg = 0 | (Math.random() * 2 + 90);
-         this.colorType = 7;
-         this.bst = 1;
-         }
-         else {
-         this.colorType = 0 | (Math.random() * 5 + 1);
-         this.bst = 0;
-         }*/
-
-        this.allBubblesColorType = [];
-
-        this.isStoped = this.u = this.vib = this.vk = 0;
-        this.ga = 3;
 
         this.turret = cc.Sprite.create(Turret);
         this.turret.setAnchorPoint(cc.p(0.5, 0.31));
-        this.turret.setPosition(cc.pAdd(PP.VisibleRect.bottom(),cc.p(0,46)));
+        this.turret.setPosition(cc.pAdd(PP.VisibleRect.bottom(), cc.p(0, 46)));
         this.addChild(this.turret, 11);
 
         var pad = cc.Sprite.create(Pad);
-        pad.setPosition(cc.pAdd(PP.VisibleRect.bottom(),cc.p(0,16)));
+        pad.setPosition(cc.pAdd(PP.VisibleRect.bottom(), cc.p(0, 16)));
         this.addChild(pad, 10);
     },
-    onEnter:function(){
+    onEnter: function () {
         this._super();
         this.initGameData();
-        this.setting();
+        this.gameSetting();
         this.newBubble();
     },
-    initGameData:function () {
+    initGameData: function () {
         this.poc = parseInt((PP.lv - 1) / this.allst) + this.poc2;
-        this.downc = 18 - PP.dlv2 * 2;
-        this.stg = PP.lv % this.allst;
-        if (this.stg == 0) {
-            this.stg = this.allst;
+        this.downCount = 18 - PP.dlv2 * 2;
+        this.curLevel = PP.lv % this.allst;
+        if (this.curLevel == 0) {
+            this.curLevel = this.allst;
         }
-        if (this.stg % 10 == 0) {
-            this.stg = 0 | (Math.random() * 2 + 90);
+        if (this.curLevel % 10 == 0) {
+            this.curLevel = 0 | (Math.random() * 2 + 90);
             this.colorType = 7;
             this.bst = 1;
         }
@@ -103,11 +108,11 @@ PP.GameLayer = cc.Layer.extend({
         }
         this.game.getBgLayer().resetWall();
     },
-    setGame:function (v) {
+    setGame: function (v) {
         this.game = v;
     },
-    setting:function () {
-        var level = PP.LEVEL["ty" + this.stg];
+    gameSetting: function () {
+        var level = PP.LEVEL["ty" + this.curLevel];
         var nums = level.length;
         var arr = 8;
         var sx = this.px + this.diameter / 2;
@@ -136,43 +141,42 @@ PP.GameLayer = cc.Layer.extend({
                 }
                 ars = 0;
                 ++lines;
-                sy = sy - this.udg;
+                sy = sy - this.gapDistance;
             }
         }
     },
-    gos:function () {
+    gos: function () {
         //PP.hrr.i = 0;
         //PP.hrr.gotoAndStop(1);
         //_parent._parent.ssh.gotoAndPlay(2);
         this.shts = 0;
-        this.isStoped = 1;
+        this.stoped = 1;
         this.xSpeed = Math.sin(this.radian * this.turret.getRotation()) * this.speed;
         this.ySpeed = Math.cos(this.radian * this.turret.getRotation()) * this.speed;
         this.allBubblesAmount = this.allBubbles.length;
-        ++this.hcount;
+        ++this.hitCount;
     },
-    dcup:function () {
-        var _loc2 = 1;
-        var ttem = this.downc - this.hcount;
+    setGameState: function () {
+        var dc = 1;
+        var ttem = this.downCount - this.hitCount;
         if (ttem < 4) {
-            // this.god.vib = ttem;
-            //this.god.ban = this.allBubbles.length;
+            this.dvalueHitCount = ttem;
         }
-        if (this.downc <= this.hcount) {
+        if (this.downCount <= this.hitCount) {
             this.allGoDown();
-            this.hcount = 0;
+            this.hitCount = 0;
         }
-        if (this.scanOver()) {
+        if (this.checkGameOver()) {
             cc.log("Game Over");
-            _loc2 = 0;
+            dc = 0;
             /*_parent.hrr.i = 500;
              _parent._parent.ov.gotoAndPlay(2);*/
         }
-        return _loc2;
+        return dc;
     },
-    undeadBubbles:function () {
+    undeadBubbles: function () {
         var sx = this.px + this.diameter;
-        var sy = this.py + (this.udg - this.diameter / 2);
+        var sy = this.py + (this.gapDistance - this.diameter / 2);
         for (var i = 1; i < 8; i++) {
             var child = PP.Bubble.create(1);
             this.container.addChild(child, this.depth, i);
@@ -184,153 +188,148 @@ PP.GameLayer = cc.Layer.extend({
             sx = sx + this.diameter;
         }
     },
-    allGoDown:function () {
-         ++this.wallPosY;
-         //var _loc3 = Math.random()*2;
-         //_parent.umb.boy.gotoAndPlay("dn" + _loc3);
-         //_parent.sen.gotoAndPlay("bad");
-         //_parent.umb._y = _parent.umb._y - 15;
+    allGoDown: function () {
+        ++this.wallPosY;
+        //var _loc3 = Math.random()*2;
+        //_parent.umb.boy.gotoAndPlay("dn" + _loc3);
+        //_parent.sen.gotoAndPlay("bad");
+        //_parent.umb._y = _parent.umb._y - 15;
         /* if (this.wallPosY == 6) {
-              _parent.rbt.gotoAndStop(2);
+         _parent.rbt.gotoAndStop(2);
          }*/
-        this.game.getBgLayer().wallGoDown(this.udg);
+        this.game.getBgLayer().wallGoDown(this.gapDistance);
         //this.mit.gotoAndPlay(2);
         var bubble;
-         for (var i = 0; i < this.allBubbles.length; i++) {
-               bubble = this.allBubbles[i];
-             bubble.setPosition(cc.pSub(bubble.getPosition(),cc.p(0,this.udg)));
-         }
+        for (var i = 0; i < this.allBubbles.length; i++) {
+            bubble = this.allBubbles[i];
+            bubble.setPosition(cc.pSub(bubble.getPosition(), cc.p(0, this.gapDistance)));
+        }
     },
-    search1:function (blna) {
-        this.targetBubble = [blna];
-        this.nuj = [];
-        this.noj = [];
-        this.res = [];
+    searchPath1: function (blna) {
+        var originBubbles = [blna];
+        var remainingBubbles = [];
+        this.needToBeDeleted = [];
+        this.dontNeedToDeleted = [];
+
         var whi = 1;
         while (whi) {
-            this.noj = [];
-            for (var i = 0; i < this.targetBubble.length; i++) {
+            this.dontNeedToDeleted = [];
+            for (var i = 0; i < originBubbles.length; i++) {
                 var finds = 0;
-                for (var j = 0; j < this.nuj.length; j++) {
-                    if (this.targetBubble[i] == this.nuj[j]) {
+                for (var j = 0; j < this.needToBeDeleted.length; j++) {
+                    if (originBubbles[i] == this.needToBeDeleted[j]) {
                         finds = 1;
                     }
                 }
                 if (finds == 0) {
-                    this.noj.push(this.targetBubble[i]);
+                    this.dontNeedToDeleted.push(originBubbles[i]);
                 }
             }
-            this.targetBubble = [];
-            var tes = this.noj.length;
+            originBubbles = [];
+            var tes = this.dontNeedToDeleted.length;
             for (var i = 0; i < tes; i++) {
-                this.targetBubble[i] = this.noj[i];
+                originBubbles[i] = this.dontNeedToDeleted[i];
             }
             if (tes == 0) {
                 whi = 0;
                 continue;
             }
-            this.res = [];
+            remainingBubbles = [];
             for (var i = 0; i < tes; i++) {
-                var tag = this.targetBubble[i];
-                this.nuj.push(tag);
+                var tag = originBubbles[i];
+                this.needToBeDeleted.push(tag);
                 var np = Math.floor(tag / 10);
                 var nn = tag % 10;
                 var ch = np % 2;
                 for (var j = 0; j < 6; j++) {
-                    var nump = np + this.arp[j];
-                    var numn = nn + this["arn" + ch][j];
+                    var nump = np + this.yGap[j];
+                    var numn = nn + this["xGap" + ch][j];
                     var n = nump * 10 + numn;
                     if (n != -1) {
                         var child = this.container.getChildByTag(n);
                         if (child && child.colorType < 10) {
-                            this.res.push(n);
+                            remainingBubbles.push(n);
                         }
                     }
                 }
             }
-            this.res.sort();
-            var ap = this.res.length;
-            this.targetBubble = [];
+            remainingBubbles.sort();
+            var ap = remainingBubbles.length;
+            originBubbles = [];
             for (var i = 0; i < ap; i++) {
-                this.targetBubble.push(this.res[i]);
+                originBubbles.push(remainingBubbles[i]);
             }
         }
     },
-    search2:function (blna, key) {
-        this.targetBubble = [blna];
-        this.nuj = [];
-        this.noj = [];
-        this.res = [];
+    searchPath2: function (blna, key) {
+        var originBubbles = [blna];
+        var remainingBubbles = [];
+        this.needToBeDeleted = [];
+        this.dontNeedToDeleted = [];
 
         var whi = 1;
         while (whi) {
-            this.noj = [];
-            for (var i = 0; i < this.targetBubble.length; i++) {
+            this.dontNeedToDeleted = [];
+            for (var i = 0; i < originBubbles.length; i++) {
                 var finds = 0;
-                for (var j = 0; j < this.nuj.length; j++) {
-                    if (this.targetBubble[i] == this.nuj[j]) {
+                for (var j = 0; j < this.needToBeDeleted.length; j++) {
+                    if (originBubbles[i] == this.needToBeDeleted[j]) {
                         finds = 1;
                     }
                 }
                 if (finds == 0) {
-                    this.noj.push(this.targetBubble[i]);
+                    this.dontNeedToDeleted.push(originBubbles[i]);
                 }
             }
-            this.targetBubble = [];
-            var tes = this.noj.length;
+            originBubbles = [];
+            var tes = this.dontNeedToDeleted.length;
             for (i = 0; i < tes; i++) {
-                this.targetBubble[i] = this.noj[i];
+                originBubbles[i] = this.dontNeedToDeleted[i];
             }
             if (tes == 0) {
                 whi = 0;
                 continue;
             }
-            this.res = [];
+            remainingBubbles = [];
             for (var i = 0; i < tes; i++) {
-                var tag = this.targetBubble[i];
-                this.nuj.push(tag);
+                var tag = originBubbles[i];
+                this.needToBeDeleted.push(tag);
                 var np = Math.floor(tag / 10);
                 var nn = tag % 10;
                 var ch = np % 2;
                 for (var j = 0; j < 6; j++) {
-                    var nump = np + this.arp[j];
-                    var numn = nn + this["arn" + ch][j];
+                    var nump = np + this.yGap[j];
+                    var numn = nn + this["xGap" + ch][j];
                     var n = nump * 10 + numn;
                     if (n != -1) {
                         var child = this.container.getChildByTag(n);
                         if (child && child.colorType == key) {
-                            this.res.push(n);
+                            remainingBubbles.push(n);
                         }
                     }
                 }
             }
-            this.res.sort();
-            this.targetBubble = [];
-            for (i = 0; i < this.res.length; i++) {
-                this.targetBubble.push(this.res[i]);
+            remainingBubbles.sort();
+            originBubbles = [];
+            for (i = 0; i < remainingBubbles.length; i++) {
+                originBubbles.push(remainingBubbles[i]);
             }
         }
     },
-    removeSameBubbles:function () {
+    removeSameBubbles: function () {
         //_parent.remv.gotoAndPlay(2);
-        var sco = this.nuj.length;
-        if (this.nuj[0].colorType == 6) {
+        var sco = this.needToBeDeleted.length;
+        if (this.needToBeDeleted[0].colorType == 6) {
             //_parent.spes.gotoAndPlay(2);
-            // _parent.sco = _parent.sco + 2000;
             this.game.getUILayer().addScore(2000);
         }
         this.game.getUILayer().addScore(sco * 10);
-        //_parent.sco = _parent.sco + sco * 10;
         //_parent.numv(_parent.sco, "scom", 6);
-        for (var i = 0; i < this.nuj.length; ++i) {
-            /* this.attachMovie("ppo", "ppo" + depth, depth);
-             this["ppo" + depth]._x = this[nuj[i]]._x;
-             this["ppo" + depth]._y = this[nuj[i]]._y;
-             ++depth;*/
+        for (var i = 0; i < this.needToBeDeleted.length; ++i) {
             var bubbleLen = this.allBubbles.length;
             for (var j = 0; j < bubbleLen; j++) {
                 var child = this.allBubbles[j];
-                if (child && child.getTag() == this.nuj[i]) {
+                if (child && child.getTag() == this.needToBeDeleted[i]) {
                     child.removeFromParent(true);
                     this.allBubbles.splice(j, 1);
                     j = bubbleLen;
@@ -338,50 +337,56 @@ PP.GameLayer = cc.Layer.extend({
             }
         }
     },
-    inspace:function () {
-        this.noj = [];
+    removeBubblesInSpace: function () {
+        this.dontNeedToDeleted = [];
         for (i = 0; i < this.allBubbles.length; i++) {
             var finds = 0;
-            for (var j = 0; j < this.nuj.length; j++) {
-                if (this.allBubbles[i].getTag() == this.nuj[j]) {
+            for (var j = 0; j < this.needToBeDeleted.length; j++) {
+                if (this.allBubbles[i].getTag() == this.needToBeDeleted[j]) {
                     finds = 1;
                 }
             }
             if (finds == 0) {
-                this.noj.push(this.allBubbles[i].getTag());
+                this.dontNeedToDeleted.push(this.allBubbles[i].getTag());
             }
         }
-        var kk = this.noj.length;
+        var kk = this.dontNeedToDeleted.length;
+        var spawn = cc.Spawn.create(cc.MoveBy.create(0.3,cc.p(0,-50)),cc.FadeOut.create(0.3)),seq;
+
         for (var i = 0; i < kk; i++) {
             var bubbleLen = this.allBubbles.length;
             for (var j = 0; j < bubbleLen; j++) {
                 var child = this.allBubbles[j];
-                    if (child && child.colorType < 9 && child.getTag() == this.noj[i]) {
-                        child.removeFromParent(true);
-                        this.allBubbles.splice(j, 1);
-                        j = bubbleLen;
-                    }
+                if (child && child.colorType < 9 && child.getTag() == this.dontNeedToDeleted[i]) {
+                    seq = cc.Sequence.create(spawn.copy(), cc.CallFunc.create(child.removeFromParent,child,true));
+                    child.runAction(seq);
+                    //child.removeFromParent(true);
+                    this.allBubbles.splice(j, 1);
+                    j = bubbleLen;
+                }
             }
         }
         var spe = kk * 20;
         //score
         this.game.getUILayer().addScore(spe);
+        //this.numv(this.game.getUILayer().score, 6);
         /* _parent.sco = _parent.sco + spe;
          _parent.numv(_parent.sco, "scom", 6);
          _parent.spe.sco = spe;
-         _parent.spe.isStoped = 1;
+         _parent.spe.stoped = 1;
          _parent.spe.i = 0;
          _parent.spe.gotoAndStop(2);*/
     },
-    numv:function (ints, legs) {
+    numv: function (ints, legs) {
         var _loc3 = 1;
         for (var i = 0; i < legs; i++) {
             var _loc2 = parseInt(ints / _loc3) % 10 + 1;
-            this[tgt]["b" + i].gotoAndStop(_loc2);
+            console.log(_loc2)
+            //this[tgt]["b" + i].gotoAndStop(_loc2);
             _loc3 = _loc3 * 10;
         }
     },
-    scanOver:function () {
+    checkGameOver: function () {
         var isGameOver = false;
         var len = this.allBubbles.length;
         for (var i = 0; i < len; i++) {
@@ -392,41 +397,42 @@ PP.GameLayer = cc.Layer.extend({
         }
         return isGameOver;
     },
-    onTouchesBegan:function (touches) {
+    onTouchesBegan: function (touches) {
         this._super();
-        this.rotateWeapon(touches);
+        this.rotateWeapon(touches[0].getLocation());
     },
-    onTouchesMoved:function (touches) {
+    onTouchesMoved: function (touches) {
         this._super();
-        this.rotateWeapon(touches);
+        this.rotateWeapon(touches[0].getLocation());
     },
-    onTouchesEnded:function (touches) {
-        this._super();
-        this.shoot();
-    },
-    onMouseDown:function (event) {
-        this._super();
-        this.rotateWeapon(touches);
-    },
-    onMouseMoved:function (event) {
-        this._super();
-        this.rotateWeapon(touches);
-    },
-    onMouseDragged:function (event) {
-        this._super();
-        this.rotateWeapon(touches);
-    },
-    onMouseUp:function (event) {
+    onTouchesEnded: function (touches) {
         this._super();
         this.shoot();
     },
-    shoot:function () {
-        if (/*this.shts == 1 && */(this.mouse.x > 15 && this.mouse.x < 315)) {
+    onMouseDown: function (event) {
+        this._super();
+        this.rotateWeapon(event.getLocation());
+    },
+    onMouseMoved: function (event) {
+        this._super();
+        this.rotateWeapon(event.getLocation());
+    },
+    onMouseDragged: function (event) {
+        this._super();
+        this.rotateWeapon(event.getLocation());
+    },
+    onMouseUp: function (event) {
+        this._super();
+        this.shoot();
+    },
+    shoot: function () {
+        var startGO = !this.game.waitingForGetSet;
+        if (this.shts == 1 &&  startGO && (this.mouse.x > 15 && this.mouse.x < 315)) {
             this.gos();
         }
     },
-    rotateWeapon:function (touches) {
-        this.mouse = touches[0].getLocation();
+    rotateWeapon: function (pos) {
+        this.mouse = pos;
         var xdis = this.mouse.x - this.turret.getPosition().x;
         var ydis = this.mouse.y - this.turret.getPosition().y;
         var gagy = -(Math.atan2(ydis, xdis) / this.radian - 90);
@@ -436,7 +442,7 @@ PP.GameLayer = cc.Layer.extend({
             }
         }
     },
-    newBubble:function () {
+    newBubble: function () {
         this.tmpBubble = PP.Bubble.create(this.colorType);
         this.tmpBubble.setPosition(this.turret.getPosition());
         this.container.addChild(this.tmpBubble, this.depth);
@@ -451,8 +457,7 @@ PP.GameLayer = cc.Layer.extend({
         }
         else {
             this.allBubblesColorType = [];
-            var alls = this.allBubbles.length;
-            for (var i = 0; i < alls; i++) {
+            for (var i = 0; i < this.allBubbles.length; i++) {
                 var rem = this.allBubbles[i].colorType;
                 if (rem < 6) {
                     this.allBubblesColorType.push(rem);
@@ -464,10 +469,10 @@ PP.GameLayer = cc.Layer.extend({
         ++this.depth;
         this.game.getUILayer().sister.setBubbleType(this.colorType);
     },
-    update:function (dt) {
-        if (this.isStoped == 1) {
+    update: function (dt) {
+        if (this.stoped == 1) {
             this.tmpBubble.setPosition(cc.pAdd(this.tmpBubble.getPosition(), cc.p(this.xSpeed * dt, this.ySpeed * dt)));
-            for (var i = 0; i < this.allBubblesAmount; i++) {
+            for (var i = 0; i < this.allBubbles.length; i++) {
                 var tempBubble = this.allBubbles[i];
                 var p = cc.pSub(this.tmpBubble.getPosition(), tempBubble.getPosition());
                 var distance = cc.pLength(p);
@@ -480,11 +485,11 @@ PP.GameLayer = cc.Layer.extend({
                     var gubl = 0;
                     var ch = np % 2;
                     for (var j = 0; j < 6; j++) {
-                        var nump = np + this.arp[j];
-                        var numn = nn + this["arn" + ch][j];
+                        var nump = np + this.yGap[j];
+                        var numn = nn + this["xGap" + ch][j];
                         var isExitBubble = this.container.getChildByTag(nump * 10 + numn);
                         if (isExitBubble == null) {
-                            var radian = this.radian * this.gag[j];
+                            var radian = this.radian * this.arrDistance[j];
                             var tx = tempBubble.getPosition().x + Math.sin(radian) * this.diameter;
                             var ty = tempBubble.getPosition().y - Math.cos(radian) * this.diameter;
                             p = cc.pSub(this.tmpBubble.getPosition(), cc.p(tx, ty));
@@ -507,32 +512,33 @@ PP.GameLayer = cc.Layer.extend({
                     this.tmpBubble.setTag(gubl);
                     if (this.tmpBubble.colorType < 7) {
                         this.allBubbles.push(this.tmpBubble);
-                        this.search2(gubl, this.tmpBubble.colorType);
+                        this.searchPath2(gubl, this.tmpBubble.colorType);
                     }
                     else {
-                        this.nuj = [];
+                        this.needToBeDeleted = [];
                     }
                     this.newBubble();
-                    this.isStoped = 0;
-                    i = this.allBubblesAmount;
-                    if (this.nuj.length >= this.poc) {
+                    this.stoped = 0;
+                    i = this.allBubbles.length;
+                    if (this.needToBeDeleted.length >= this.poc) {
                         //_parent._parent.umb.boy.gotoAndPlay("lve");
                         this.removeSameBubbles();
-                        this.search1(0);
-                        if (this.nuj.length == 7) {
+                        this.searchPath1(0);
+                        if (this.needToBeDeleted.length == 7) {
                             //_parent._parent.cll.gotoAndPlay(2);
-                            this.cler = 1;
+                            this.cleared = 1;
                         }
-                        if (this.nuj.length != this.allBubbles.length ) {
+                        if (this.needToBeDeleted.length != this.allBubbles.length) {
                             //_parent._parent.sen.gotoAndPlay("good");
-                            this.inspace();
-                            //this.god.isStoped = 1;
+                            this.removeBubblesInSpace();
+                            //this.stoped = 1;
                         }
-                        else if (this.cler == 1) {
+
+                        if (this.cleared == 1) {
                             this.shts = 0;
                         }
                         else {
-                            this.shts = this.dcup();
+                            this.shts = this.setGameState();
                         }
                     }
                     else if (this.container.getChildByTag(gubl).colorType == 7) {
@@ -546,8 +552,8 @@ PP.GameLayer = cc.Layer.extend({
                          this.fire._y = child.getPosition().y;*/
                         //this.fire.gotoAndPlay(2);
                         for (var k = 0; k < 6; k++) {
-                            nump = np + this.arp[k];
-                            numn = nn + this["arn" + ch][k];
+                            nump = np + this.yGap[k];
+                            numn = nn + this["xGap" + ch][k];
                             var child = this.container.getChildByTag(nump * 10 + numn);
                             if (child && child.colorType < 9) {
                                 child.removeFromParent(true);
@@ -558,65 +564,37 @@ PP.GameLayer = cc.Layer.extend({
                                 }
                             }
                         }
-                        this.search1(0);
-                        if (this.nuj.length == 7) {
+                        this.searchPath1(0);
+                        if (this.needToBeDeleted.length == 7) {
                             //_parent._parent.cll.gotoAndPlay(2);
-                            this.cler = 1;
+                            this.cleared = 1;
                         }
-                        if (this.nuj.length != this.allBubbles.length) {
-                            this.inspace();
-                            //this.god.isStoped = 1;
+                        if (this.needToBeDeleted.length != this.allBubbles.length) {
+                            this.removeBubblesInSpace();
+                            //this.stoped = 1;
                         }
-                        else if (this.cler == 1) {
+
+                        if (this.cleared == 1) {
                             this.shts = 0;
                         }
                         else {
-                            this.shts = this.dcup();
+                            this.shts = this.setGameState();
                         }
                     }
                     else {
-                        this.shts = this.dcup();
+                        this.shts = this.setGameState();
                     }
                 }
             }
-            if (this.tmpBubble.getPosition().x >= this.rightSider) {
-                var bs = 0 | (Math.random() * 2) + 1;
-                //_parent._parent["bun" + bs].gotoAndPlay(2);
+            var posX = this.tmpBubble.getPosition().x;
+            if (posX >= this.rightSider) {
                 this.tmpBubble.setPositionX(this.rightSider - 0.5);
                 this.xSpeed = this.xSpeed * -1;
             }
-            if (this.tmpBubble.getPosition().x <= this.leftSider) {
-                var bs = 0 | (Math.random() * 2) + 1;
-                //_parent._parent["bun" + bs].gotoAndPlay(2);
+            else if (posX <= this.leftSider) {
                 this.tmpBubble.setPositionX(this.leftSider + 0.5);
                 this.xSpeed = this.xSpeed * -1;
             }
-
-            /* ++this.u;
-             this.gg = this.noj.length;
-             var tmpChild;
-             for (var i = 0; i < this.gg; i++) {
-             tmpChild = this.container.getChildByTag(this.noj[i]);
-             if(tmpChild){
-             tmpChild.setPositionY(tmpChild.getPositionY()+5 + this.u * 4)
-             }
-             }*/
-            /* if (this.u == 25) {
-             this.u = this.isStoped = 0;
-             for (var i = 0; i < this.gg; i++) {
-             tmpChild = this.container.getChildByTag(this.noj[i]);
-             if(tmpChild){
-             tmpChild.removeFromParent(true);
-             }
-             */
-            /*if (this.sht.cler == 1) {
-             this.shts = 0;
-             continue;
-             }
-             this.shts = this.sht.dcup();*/
-            /*
-             }
-             }*/
 
             if (this.allBubbles.length == 7) {
                 cc.log("Game Start");
@@ -624,18 +602,23 @@ PP.GameLayer = cc.Layer.extend({
             }
         }
 
+        //shake the fucking bubbles
+        this.shakeBubbles(dt);
+    },
 
-        /* if (this.vib > 0) {
-         ++this.vk;
-         if (this.vk > vib) {
-         this.vk = 0;
-         this.ga = this.ga * -1;
-         _parent._parent.wall._x = 331 + this.ga;
-         for (var bb = 0; bb < this.ban; bb++) {
-         this.allBubbles[bb].bb._x = this.ga;
-         }
-         }
-         }*/
+    shakeBubbles: function (dt) {
+        if (this.dvalueHitCount > 0) {
+            this.currentDt += dt;
+            if (this.currentDt > 0.1) {
+                this.currentDt = 0;
+                this.xDvalue = this.xDvalue * -1;
+                var bubble;
+                for (var i = 0; i < this.allBubbles.length; i++) {
+                    bubble = this.allBubbles[i];
+                    bubble.setPosition(cc.pAdd(cc.p(this.xDvalue, 0), bubble.getPosition()));
+                }
+            }
+        }
     }
 });
 

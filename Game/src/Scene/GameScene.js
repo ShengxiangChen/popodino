@@ -2,6 +2,8 @@ PP.GameScene = cc.Scene.extend({
     gameLayer:null,
     bgLayer:null,
     uiLayer:null,
+    go:null,
+    waitingForGetSet:null,
     init:function () {
         this._super();
         var cache = cc.SpriteFrameCache.getInstance();
@@ -18,10 +20,22 @@ PP.GameScene = cc.Scene.extend({
 
         this.bgLayer = PP.BackgroundLayer.create();
         this.addChild(this.bgLayer, 0);
+
+        this.initGameData();
+        this.initStartAnimation();
+    },
+    initGameData:function(){
+        this.waitingForGetSet = true;
     },
     onEnter:function(){
         this._super();
         this.schedule(this.update);
+    },
+    initStartAnimation:function(){
+        this.go = cc.Sprite.createWithSpriteFrameName("start.png");
+        this.go.setPosition(PP.VisibleRect.center());
+        this.go.setScale(0);
+        this.addChild(this.go, PP.zOrder.top);
     },
     getGameLayer:function(){
         return this.gameLayer;
@@ -45,9 +59,27 @@ PP.GameScene = cc.Scene.extend({
         }
 
         this.gameLayer.initGameData();
-        this.gameLayer.setting();
+        this.gameLayer.gameSetting();
+    },
+    triggerGetSetGo:function(){
+        if (this.waitingForGetSet) {
+            this.waitingForGetSet = false;
+            //csx cc.log("Starting Game - triggerGetSetGo Starting getSetGo");
+            this.startGo();
+        }
+    },
+    startGo:function(){
+        var easeElasticOut1 = cc.EaseElasticOut.create(cc.ScaleTo.create(0.75, 1));
+        var easeExponentialIn1 = cc.EaseExponentialIn.create(cc.ScaleTo.create(0.5, 2));
+        var scaleTo1 = cc.ScaleTo.create(0, 0);
+        var fadeOut = cc.FadeOut.create(0.5);
+        var fadeIn = cc.FadeIn.create(0);
+        var seq = cc.Sequence.create(easeElasticOut1, easeExponentialIn1, scaleTo1, cc.DelayTime.create(0.5), fadeOut, fadeIn);
+
+        this.go.runAction(seq);
     },
     update:function(dt){
+        this.triggerGetSetGo();
         this.gameLayer.update(dt);
     }
 
