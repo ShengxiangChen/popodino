@@ -72,6 +72,8 @@ PP.UILayer = cc.Layer.extend({
         this.sister.setAnchorPoint(PP.AnchorPointBottom);
         this.sister.setPosition(cc.pAdd(PP.VisibleRect.bottomLeft(),cc.p(70,0)));
         this.addChild(this.sister);
+
+        //happy ending
     },
     setLevel:function(level){
         //this.levelLabel.setString(level);
